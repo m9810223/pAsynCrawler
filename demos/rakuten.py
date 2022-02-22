@@ -1,12 +1,10 @@
 from pprint import pprint
 
-from pathlib import Path
 from functools import partial
 from json import loads
 
 from bs4 import BeautifulSoup
-
-from pAsynCrawler import AsynCrawler as AsynCrawler, flattener
+from pAsynCrawler import AsynCrawler, flattener
 
 
 BeautifulSoup = partial(BeautifulSoup, features="html.parser")
@@ -60,14 +58,11 @@ def parser_4(response_text):
 
 
 if __name__ == '__main__':
-    BASE_DIR = Path(__file__).resolve().parent
-    ac = AsynCrawler(cache_dir=BASE_DIR/'my_cache')
+    ac = AsynCrawler(asy_fetch=20, mp_parse=6)
     datas_1, urls_1 = ac.fetch_and_parse(parser_0, [url_root])
     # pprint(datas_1)
-    urls_1 = flattener(urls_1)
-    # pprint(urls_1)
 
-    datas_2, urls_2, datas_3, urls_3, datas_4, urls_4 = ac.fetch_and_parse(parser_1, urls_1)
+    datas_2, urls_2, datas_3, urls_3, datas_4, urls_4 = ac.fetch_and_parse(parser_1, flattener(urls_1))
     # print(datas_2)
     # pprint(urls_2)
     # print(datas_3)
@@ -76,10 +71,9 @@ if __name__ == '__main__':
     # pprint(urls_4)
 
     urls_4 = flattener(urls_4)
-    urls_4 = urls_4[:1]
-    # pprint(urls_4)
+    urls_4 = urls_4[:10]  # DEV
 
     # parse_page_nums = 30 # TODO: parse ssome pages, qs: '?p=X'
     datas_5, urls_5 = ac.fetch_and_parse(parser_4, urls_4)
-    print(datas_5)
+    pprint(datas_5)
     # pprint(urls_5)

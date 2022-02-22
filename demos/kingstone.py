@@ -3,8 +3,7 @@ from pathlib import Path
 from functools import partial
 
 from bs4 import BeautifulSoup
-
-from pAsynCrawler import AsynCrawler as AsynCrawler
+from pAsynCrawler import AsynCrawler
 
 
 BeautifulSoup = partial(BeautifulSoup, features="html.parser")
@@ -81,6 +80,6 @@ def parser_4(response_text):
 if __name__ == '__main__':
     BASE_DIR = Path(__file__).resolve().parent
     ac = AsynCrawler(cache_dir=BASE_DIR/'my_cache')
-    datas, next_urls = ac.fetch_and_parse(parser_0, [url_root]*2)
+    datas, next_urls = ac.fetch_and_parse(parser_0, [url_root])
     pprint(datas)
     pprint(next_urls)
