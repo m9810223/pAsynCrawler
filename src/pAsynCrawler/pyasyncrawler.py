@@ -34,20 +34,21 @@ class AsynCrawler:
         print(format_str.format(kind='DONE'))
         return result
 
-    def _fetch(self, urls, start_id: int = 0):
+    def _fetch(self, urls, start_id: int = 0) -> List[str]:
         return asyncio.run(async_worker(
             self.__fetch,
             zip(urls, range(start_id, start_id+len(urls)))
         ))
 
-    def _batch_fetch(self, urls):
+    def _batch_fetch(self, urls) -> Tuple[str]:
         urls_chunks = chunks(urls, size=self.asy_fetch)
-        return tuple(*chain(
+        fetched_result = tuple(
             self._fetch(urls_chunks[i], start_id=self.asy_fetch*i)
             for i in range(len(urls_chunks))
-        ))
+        )
+        return tuple(chain(*fetched_result))
 
-    def fetch(self, urls: Tuple[str]) -> List[str]:
+    def fetch(self, urls: Tuple[str]) -> Tuple[str]:
         return self._batch_fetch(urls)
 
     def parse(self, parser, responses, *args_list):
