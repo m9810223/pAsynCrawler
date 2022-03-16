@@ -32,14 +32,16 @@ def urls_constructor(url, *, q: Dict = None, **kwargs) -> None:
     return urls
 
 
-def flattener(seq):
-    def _flattener(seq):
+def flattener(seq, func=None):
+    def _flattener(seq, func):
         for s in seq:
-            if isinstance(s, str) or not hasattr(s, '__iter__'):
+            if func(s):
                 yield s
             else:
-                yield from _flattener(s)
-    return tuple(_flattener(seq))
+                yield from _flattener(s, func)
+    if func is None:
+        def func(x): return isinstance(x, str) or not hasattr(x, '__iter__')
+    return tuple(_flattener(seq, func))
 
 
 if __name__ == '__main__':
