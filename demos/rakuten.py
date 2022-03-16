@@ -1,3 +1,4 @@
+from pathlib import Path
 from pprint import pprint
 
 from functools import partial
@@ -58,7 +59,8 @@ def parser_4(response_text):
 
 
 if __name__ == '__main__':
-    ac = AsynCrawler(asy_fetch=20, mp_parse=6)
+    BASE_DIR = Path(__file__).resolve().parent
+    ac = AsynCrawler(cache_dir=BASE_DIR/'.cache', asy_fetch=2, mp_parse=6)
     datas_1, urls_1 = ac.fetch_and_parse(parser_0, [url_root])
     # pprint(datas_1)
 

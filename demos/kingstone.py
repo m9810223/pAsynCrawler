@@ -79,7 +79,7 @@ def parser_4(response_text):
 
 if __name__ == '__main__':
     BASE_DIR = Path(__file__).resolve().parent
-    ac = AsynCrawler(cache_dir=BASE_DIR/'my_cache')
+    ac = AsynCrawler(cache_dir=BASE_DIR/'.cache')
     datas, next_urls = ac.fetch_and_parse(parser_0, [url_root])
     pprint(datas)
     pprint(next_urls)
