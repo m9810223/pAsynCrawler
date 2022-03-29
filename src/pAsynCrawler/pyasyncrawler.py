@@ -1,3 +1,4 @@
+import logging
 import asyncio
 from typing import Tuple, Callable, List
 from re import sub
@@ -15,11 +16,13 @@ class AsynCrawler:
         fetcher=default_fetcher,
         asy_fetch=2,
         mp_parse=2,
+        logger_name=__name__,
     ):
         self.cache_dir = cache_dir
         self.fetcher = fetcher
         self.asy_fetch = asy_fetch
         self.mp_parse = mp_parse
+        self.__logger = logging.getLogger(logger_name)
 
     @FileCache(
         lambda url: sub(
@@ -29,15 +32,15 @@ class AsynCrawler:
         )
     )
     async def __fetch(self, url: str, start_id: int) -> str:
-        format_str = f'[{{kind:<5}}] {1+start_id:0>3} -> {url}'
+        format_str = f'{{kind:<5}} {url}'  # {1+start_id:>2}
         result = None
         try:
-            print(format_str.format(kind='go...'))
+            self.__logger.debug(format_str.format(kind='go...'))
             result = await self.fetcher(url)  # TODO: retry
         except Exception:
-            print(format_str.format(kind='FAIL'))
+            self.__logger.warning(format_str.format(kind='FAIL!'))
             return None
-        print(format_str.format(kind='DONE'))
+        self.__logger.info(format_str.format(kind='done '))
         return result
 
     def _fetch(self, urls, start_id: int = 0) -> List[str]:
