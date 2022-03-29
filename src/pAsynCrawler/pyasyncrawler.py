@@ -21,7 +21,13 @@ class AsynCrawler:
         self.asy_fetch = asy_fetch
         self.mp_parse = mp_parse
 
-    @FileCache(lambda url: sub(pattern='[\\\\/:*?"><".{}\[\]]+', repl='-', string=url,))
+    @FileCache(
+        lambda url: sub(
+            pattern='[\\\\/:*?"><".{}\[\]]+',
+            repl='-',
+            string=url,
+        )
+    )
     async def __fetch(self, url: str, start_id: int) -> str:
         format_str = f'[{{kind:<5}}] {1+start_id:0>3} -> {url}'
         result = None
@@ -35,15 +41,14 @@ class AsynCrawler:
         return result
 
     def _fetch(self, urls, start_id: int = 0) -> List[str]:
-        return asyncio.run(async_worker(
-            self.__fetch,
-            zip(urls, range(start_id, start_id+len(urls)))
-        ))
+        return asyncio.run(
+            async_worker(self.__fetch, zip(urls, range(start_id, start_id + len(urls))))
+        )
 
     def _batch_fetch(self, urls) -> Tuple[str]:
         urls_chunks = chunks(urls, size=self.asy_fetch)
         fetched_result = tuple(
-            self._fetch(urls_chunks[i], start_id=self.asy_fetch*i)
+            self._fetch(urls_chunks[i], start_id=self.asy_fetch * i)
             for i in range(len(urls_chunks))
         )
         return tuple(chain(*fetched_result))
@@ -53,9 +58,7 @@ class AsynCrawler:
 
     def parse(self, parser, responses, *args_list):
         parse_results = mp_worker(
-            parser,
-            add_args(responses, *args_list),
-            self.mp_parse
+            parser, add_args(responses, *args_list), self.mp_parse
         )
         results = []
         for r in parse_results:

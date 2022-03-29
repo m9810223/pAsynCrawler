@@ -10,9 +10,10 @@ class FileCache:
         self.method_cache_dir: Path = None
 
     def __call__(self, func):
-        """ A decorator of file cache for async function
-            use 2 additional args (url, num)
+        """A decorator of file cache for async function
+        use 2 additional args (url, num)
         """
+
         @wraps(func)
         async def a_wrapper(*args, **kwargs):
             method_self = args[0]
@@ -57,12 +58,12 @@ class FileCache:
         return a_wrapper
 
     def read(self, filename: Union[Path, str]):
-        path = self.method_cache_dir/self.filename_transformer(filename)
+        path = self.method_cache_dir / self.filename_transformer(filename)
         if path.is_file():
             return open(path).read()
 
     def save(self, filename: Union[Path, str], text):
-        path = self.method_cache_dir/self.filename_transformer(filename)
+        path = self.method_cache_dir / self.filename_transformer(filename)
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, 'w') as f:
             f.write(text)
@@ -94,6 +95,6 @@ if __name__ == '__main__':
             print('done')
             return result
 
-    a = A(cache_dir=BASE_DIR/'z-cache')
+    a = A(cache_dir=BASE_DIR / 'z-cache')
     # data = a.get_data(url)
     # print(data)
