@@ -17,11 +17,9 @@ pip install pAsynCrawler
 - Fetch data - `Asynchronously`
 - Parse data - with `multiprocessing`
 
-## Demo
-
-[demo code](https://github.com/m9810223/pAsynCrawler/tree/master/demos)
-
 ## Example
+
+[examples](https://github.com/m9810223/pAsynCrawler/tree/master/examples)
 
 ```python
 from bs4 import BeautifulSoup
