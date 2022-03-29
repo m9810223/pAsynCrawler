@@ -4,7 +4,7 @@ requires = ["flit_core >=3.2,<4"]
 
 [project]
 name = "pAsynCrawler" 
-version = "0.1.10" # official version
+version = "0.1.11" # official version
 
 authors = [{name = "Michael Hsieh", email = "m9810223@gmail.com"}]
 description = ""
@@ -45,12 +45,12 @@ homepage = "https://github.com/m9810223/pAsynCrawler"
 authors = [" "]
 description = ""
 name = "pAsynCrawler"
-version = "0.1.10-dev"
+version = "0.1.11-dev"
 
 [tool.poetry.dependencies]
 aiohttp = "^3.8.1"
 python = ">3.7,<4"
 
 [tool.poetry.dev-dependencies]
-autopep8 = "^1.6.0"
+black = {version = "^22.3.0", allow-prereleases = true}
 bs4 = "^0.0.1"

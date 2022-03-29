@@ -1,7 +1,8 @@
+from logging import Logger
 from functools import wraps
 from pathlib import Path
 from typing import Union, Callable
-from inspect import iscoroutinefunction
+# from inspect import iscoroutinefunction
 
 
 class FileCache:
@@ -10,21 +11,21 @@ class FileCache:
         self.method_cache_dir: Path = None
 
     def __call__(self, func):
-        """ A decorator of file cache for async function
-            use 2 additional args (url, num)
+        """A decorator of file cache for async function
+        use 2 additional args (url, num)
         """
+
         @wraps(func)
         async def a_wrapper(*args, **kwargs):
             method_self = args[0]
             method_url = args[1]
-            # TODO: logging details
-            # format_str = f'[{{kind:<5}}] {method_self.name}-{1+kwargs.get("num",0):0>3} -> {method_url}'
+            logger: Logger = method_self._logger
             result = None
             self.method_cache_dir = method_self.cache_dir
             if self.method_cache_dir is not None:
                 result = self.read(method_url)
             if result:
-                # print(format_str.format(kind='CACHE'))
+                logger.debug(f'cache {method_url}')
                 return result
             result = await func(*args, **kwargs)
             if result is None:
@@ -57,12 +58,12 @@ class FileCache:
         return a_wrapper
 
     def read(self, filename: Union[Path, str]):
-        path = self.method_cache_dir/self.filename_transformer(filename)
+        path = self.method_cache_dir / self.filename_transformer(filename)
         if path.is_file():
             return open(path).read()
 
     def save(self, filename: Union[Path, str], text):
-        path = self.method_cache_dir/self.filename_transformer(filename)
+        path = self.method_cache_dir / self.filename_transformer(filename)
         path.parent.mkdir(parents=True, exist_ok=True)
         with open(path, 'w') as f:
             f.write(text)
@@ -94,6 +95,6 @@ if __name__ == '__main__':
             print('done')
             return result
 
-    a = A(cache_dir=BASE_DIR/'z-cache')
+    a = A(cache_dir=BASE_DIR / 'z-cache')
     # data = a.get_data(url)
     # print(data)

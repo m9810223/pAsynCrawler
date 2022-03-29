@@ -16,8 +16,7 @@ def _dict__cartesian_product(dic: Dict) -> Tuple[Dict]:
     {'p': ('a', 'b')} -> ({'p': 'a'}, {'p': 'b'})
     """
     return tuple(
-        dict(zip(dic.keys(), vals))
-        for vals in cartesian_product(*dic.values())
+        dict(zip(dic.keys(), vals)) for vals in cartesian_product(*dic.values())
     )
 
 
@@ -39,13 +38,18 @@ def flattener(seq, func=None):
                 yield s
             else:
                 yield from _flattener(s, func)
+
     if func is None:
-        def func(x): return isinstance(x, str) or not hasattr(x, '__iter__')
+
+        def func(x):
+            return isinstance(x, str) or not hasattr(x, '__iter__')
+
     return tuple(_flattener(seq, func))
 
 
 if __name__ == '__main__':
     from pprint import pprint
+
     url = 'https://xxx.com'
     pathes = (
         ('pa/1', 'pa/2'),
@@ -56,8 +60,6 @@ if __name__ == '__main__':
 
     pprint(
         urls_constructor(
-            f'{url}/{{path}}',
-            path=merged_pathes,
-            q={'k1': [1], 'k2': [2, 3]}
+            f'{url}/{{path}}', path=merged_pathes, q={'k1': [1], 'k2': [2, 3]}
         )
     )

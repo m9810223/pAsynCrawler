@@ -1,3 +1,4 @@
+import logging
 import asyncio
 from typing import Tuple, Callable, List
 from re import sub
@@ -15,35 +16,42 @@ class AsynCrawler:
         fetcher=default_fetcher,
         asy_fetch=2,
         mp_parse=2,
+        logger_name=__name__,
     ):
         self.cache_dir = cache_dir
         self.fetcher = fetcher
         self.asy_fetch = asy_fetch
         self.mp_parse = mp_parse
+        self._logger = logging.getLogger(logger_name)
 
-    @FileCache(lambda url: sub(pattern='[\\\\/:*?"><".{}\[\]]+', repl='-', string=url,))
+    @FileCache(
+        lambda url: sub(
+            pattern='[\\\\/:*?"><".{}\[\]]+',
+            repl='-',
+            string=url,
+        )
+    )
     async def __fetch(self, url: str, start_id: int) -> str:
-        format_str = f'[{{kind:<5}}] {1+start_id:0>3} -> {url}'
+        format_str = f'{{kind:<5}} {url}'  # {1+start_id:>2}
         result = None
         try:
-            print(format_str.format(kind='go...'))
+            self._logger.debug(format_str.format(kind='go...'))
             result = await self.fetcher(url)  # TODO: retry
         except Exception:
-            print(format_str.format(kind='FAIL'))
+            self._logger.warning(format_str.format(kind='FAIL!'))
             return None
-        print(format_str.format(kind='DONE'))
+        self._logger.info(format_str.format(kind='done '))
         return result
 
     def _fetch(self, urls, start_id: int = 0) -> List[str]:
-        return asyncio.run(async_worker(
-            self.__fetch,
-            zip(urls, range(start_id, start_id+len(urls)))
-        ))
+        return asyncio.run(
+            async_worker(self.__fetch, zip(urls, range(start_id, start_id + len(urls))))
+        )
 
     def _batch_fetch(self, urls) -> Tuple[str]:
         urls_chunks = chunks(urls, size=self.asy_fetch)
         fetched_result = tuple(
-            self._fetch(urls_chunks[i], start_id=self.asy_fetch*i)
+            self._fetch(urls_chunks[i], start_id=self.asy_fetch * i)
             for i in range(len(urls_chunks))
         )
         return tuple(chain(*fetched_result))
@@ -53,9 +61,7 @@ class AsynCrawler:
 
     def parse(self, parser, responses, *args_list):
         parse_results = mp_worker(
-            parser,
-            add_args(responses, *args_list),
-            self.mp_parse
+            parser, add_args(responses, *args_list), self.mp_parse
         )
         results = []
         for r in parse_results:

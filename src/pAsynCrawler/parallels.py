@@ -23,19 +23,19 @@ def _starmap(worker, args_list):
 
 
 async def async_worker(worker, args_list: Tuple[Tuple[Any]]) -> Coroutine:
-    """ execute coroutine "worker" with args concurrently
-    """
-    return await gather(
-        *_starmap(partial(_worker_wrap, worker), args_list)
-    )
+    """execute coroutine "worker" with args concurrently"""
+    return await gather(*_starmap(partial(_worker_wrap, worker), args_list))
 
 
 def mp_worker(worker, args_list, max_workers=2) -> List[Any]:
-    processes = max(1, min(
-        int(max_workers),
-        len(args_list),
-        cpu_count(),
-    ))
+    processes = max(
+        1,
+        min(
+            int(max_workers),
+            len(args_list),
+            cpu_count(),
+        ),
+    )
     pool = Pool(processes)
     results = pool.starmap(partial(_worker_wrap, worker), args_list)
     pool.close()
@@ -54,6 +54,4 @@ if __name__ == '__main__':
     print(add_args((1, 2), 3, 4))
 
     t = [(1, 2), (3, 4)]
-    print(list(zip(
-        *t
-    )))
+    print(list(zip(*t)))

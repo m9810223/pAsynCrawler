@@ -32,7 +32,9 @@ def parser_1(response_text):
     datas_2 = tuple(x.text for x in menus_2)
     urls_2 = tuple(x.attrs['href'] for x in menus_2)
     # lv 3
-    menus_3 = soup.select('.cl-top-block .category-content > li > .nav_popup > ul > li > a')
+    menus_3 = soup.select(
+        '.cl-top-block .category-content > li > .nav_popup > ul > li > a'
+    )
     menus_3 = menus_3[1:]  # DEV
     datas_3 = tuple(x.text for x in menus_3)
     urls_3 = tuple(x.attrs['href'] for x in menus_3)
@@ -48,8 +50,16 @@ def parser_1(response_text):
 
 def parser_4(response_text):
     soup = BeautifulSoup(response_text)
-    data_source = soup.select_one('.js-react-on-rails-component[data-component-name="SearchPage"]')
-    products = loads(data_source.text).get('initialData', {}).get('searchPage', {}).get('result', {}).get('items', {})
+    data_source = soup.select_one(
+        '.js-react-on-rails-component[data-component-name="SearchPage"]'
+    )
+    products = (
+        loads(data_source.text)
+        .get('initialData', {})
+        .get('searchPage', {})
+        .get('result', {})
+        .get('items', {})
+    )
     if not products:
         raise ValueError
     products = products[1:]  # DEV
@@ -59,12 +69,25 @@ def parser_4(response_text):
 
 
 if __name__ == '__main__':
+    import logging
+
+    logging.getLogger("asyncio").setLevel(logging.WARNING)
+    logging.basicConfig(
+        format='%(asctime)s | %(message)s',
+        level=logging.DEBUG,
+    )
     BASE_DIR = Path(__file__).resolve().parent
-    ac = AsynCrawler(cache_dir=BASE_DIR/'.cache', asy_fetch=2, mp_parse=6)
+    ac = AsynCrawler(
+        cache_dir=BASE_DIR / '.cache',
+        asy_fetch=2,
+        mp_parse=6,
+    )
     datas_1, urls_1 = ac.fetch_and_parse(parser_0, [url_root])
     # pprint(datas_1)
 
-    datas_2, urls_2, datas_3, urls_3, datas_4, urls_4 = ac.fetch_and_parse(parser_1, flattener(urls_1))
+    datas_2, urls_2, datas_3, urls_3, datas_4, urls_4 = ac.fetch_and_parse(
+        parser_1, flattener(urls_1)
+    )
     # print(datas_2)
     # pprint(urls_2)
     # print(datas_3)
@@ -77,5 +100,5 @@ if __name__ == '__main__':
 
     # parse_page_nums = 30 # TODO: parse ssome pages, qs: '?p=X'
     datas_5, urls_5 = ac.fetch_and_parse(parser_4, urls_4)
-    pprint(datas_5)
+    # pprint(datas_5)
     # pprint(urls_5)
