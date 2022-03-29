@@ -74,7 +74,7 @@ if __name__ == '__main__':
     logging.getLogger("asyncio").setLevel(logging.WARNING)
     logging.basicConfig(
         format='%(asctime)s | %(message)s',
-        level=logging.INFO,
+        level=logging.DEBUG,
     )
     BASE_DIR = Path(__file__).resolve().parent
     ac = AsynCrawler(
@@ -100,5 +100,5 @@ if __name__ == '__main__':
 
     # parse_page_nums = 30 # TODO: parse ssome pages, qs: '?p=X'
     datas_5, urls_5 = ac.fetch_and_parse(parser_4, urls_4)
-    pprint(datas_5)
+    # pprint(datas_5)
     # pprint(urls_5)

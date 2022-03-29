@@ -22,7 +22,7 @@ class AsynCrawler:
         self.fetcher = fetcher
         self.asy_fetch = asy_fetch
         self.mp_parse = mp_parse
-        self.__logger = logging.getLogger(logger_name)
+        self._logger = logging.getLogger(logger_name)
 
     @FileCache(
         lambda url: sub(
@@ -35,12 +35,12 @@ class AsynCrawler:
         format_str = f'{{kind:<5}} {url}'  # {1+start_id:>2}
         result = None
         try:
-            self.__logger.debug(format_str.format(kind='go...'))
+            self._logger.debug(format_str.format(kind='go...'))
             result = await self.fetcher(url)  # TODO: retry
         except Exception:
-            self.__logger.warning(format_str.format(kind='FAIL!'))
+            self._logger.warning(format_str.format(kind='FAIL!'))
             return None
-        self.__logger.info(format_str.format(kind='done '))
+        self._logger.info(format_str.format(kind='done '))
         return result
 
     def _fetch(self, urls, start_id: int = 0) -> List[str]:
